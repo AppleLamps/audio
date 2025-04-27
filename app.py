@@ -6,6 +6,7 @@ import base64
 import websockets
 import json
 import os
+import threading
 from openai import AsyncOpenAI
 from dotenv import load_dotenv
 import numpy as np # Needed for audio data type
@@ -300,6 +301,9 @@ async def text_translator(loop):
 
 async def main_task_wrapper(loop):
     """Manages the overall async workflow."""
+    print("main_task_wrapper started")
+    st.write("main_task_wrapper started - initializing queues")
+
     global audio_input_queue, transcription_output_queue
     audio_input_queue = asyncio.Queue()
     transcription_output_queue = asyncio.Queue()
@@ -366,6 +370,9 @@ async def main_task_wrapper(loop):
 
 # --- Button Actions ---
 if start_button and not st.session_state.is_running:
+    # Debug information
+    st.write(f"Start button pressed. API Key exists: {'Yes' if OPENAI_API_KEY else 'No'}")
+
     if not OPENAI_API_KEY:
         st.error("OPENAI_API_KEY not found. Please set it in your .env file or environment variables.")
     else:
@@ -376,17 +383,19 @@ if start_button and not st.session_state.is_running:
         translation_placeholder.text_area("Live Translation", value="", height=200, key="translation_area_start", disabled=True)
         status_placeholder.info("Starting process...")
 
-        try:
-            # Get the current event loop or create a new one if needed
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-             loop = asyncio.new_event_loop()
-             asyncio.set_event_loop(loop)
+        # Always create a new event loop to avoid issues with Streamlit's execution model
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        st.write("Created new event loop")
 
         # Start the main async task
-        st.session_state.main_task = loop.create_task(main_task_wrapper(loop))
+        st.write("Creating main task...")
+        # Create the task and run it until complete in a non-blocking way
+        st.session_state.main_task = asyncio.ensure_future(main_task_wrapper(loop), loop=loop)
+        st.write("Main task created")
 
         # Disable start, enable stop
+        st.write("Calling st.rerun()")
         st.rerun()
 
 
