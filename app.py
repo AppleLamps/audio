@@ -387,7 +387,7 @@ if start_button and not st.session_state.is_running:
         st.session_state.main_task = loop.create_task(main_task_wrapper(loop))
 
         # Disable start, enable stop
-        st.experimental_rerun()
+        st.rerun()
 
 
 if stop_button and st.session_state.is_running:
@@ -407,7 +407,7 @@ if stop_button and st.session_state.is_running:
     # time.sleep(0.5) # Avoid using time.sleep in async context if possible
 
     # Update button states
-    st.experimental_rerun()
+    st.rerun()
 
 
 # --- UI Updates based on State ---
