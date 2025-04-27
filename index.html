@@ -11,13 +11,10 @@
 <body>
     <div class="container">
         <h1>🎙️ Real-time Speech Translator</h1>
-        <p>Enter your OpenAI API Key, select target language, click Start, and speak.</p>
+        <p>Select your target language, click Start, and speak. Your speech will be transcribed and translated in real-time.</p>
 
         <div class="controls">
             <div class="config">
-                <label for="apiKey">OpenAI API Key:</label>
-                <input type="password" id="apiKey" placeholder="sk-...">
-
                 <label for="targetLang">Translate To:</label>
                 <select id="targetLang">
                     <option value="English">English</option>
@@ -33,6 +30,7 @@
                     <!-- Add more languages supported by GPT translation -->
                 </select>
                 <p class="note">(Source language is detected automatically)</p>
+                <div id="apiStatus" class="api-status">Checking API key...</div>
             </div>
             <div class="buttons">
                 <button id="startButton">Start Listening</button>
@@ -53,9 +51,8 @@
             </div>
         </div>
 
-        <div class="api-key-warning">
-            ⚠️ Your API key is used directly in the browser. Do not share this page publicly if using your main key.
-            Consider using restricted keys if possible.
+        <div class="footer">
+            Powered by OpenAI's GPT models. API key is securely stored in environment variables.
         </div>
 
     </div>
