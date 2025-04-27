@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Translator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎙️ Real-time Speech Translator</h1>
+        <p>Enter your OpenAI API Key, select target language, click Start, and speak.</p>
+
+        <div class="controls">
+            <div class="config">
+                <label for="apiKey">OpenAI API Key:</label>
+                <input type="password" id="apiKey" placeholder="sk-...">
+
+                <label for="targetLang">Translate To:</label>
+                <select id="targetLang">
+                    <option value="English">English</option>
+                    <option value="Spanish">Spanish</option>
+                    <option value="French">French</option>
+                    <option value="German">German</option>
+                    <option value="Italian">Italian</option>
+                    <option value="Portuguese">Portuguese</option>
+                    <option value="Russian">Russian</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Korean">Korean</option>
+                    <!-- Add more languages supported by GPT translation -->
+                </select>
+                <p class="note">(Source language is detected automatically)</p>
+            </div>
+            <div class="buttons">
+                <button id="startButton">Start Listening</button>
+                <button id="stopButton" disabled>Stop Listening</button>
+            </div>
+        </div>
+
+        <div id="status" class="status-idle">Enter API Key and click Start.</div>
+
+        <div class="text-areas">
+            <div class="transcription">
+                <h2>Transcription (Detected Language)</h2>
+                <textarea id="transcriptionOutput" rows="10" readonly></textarea>
+            </div>
+            <div class="translation">
+                <h2>Translation (<span id="targetLangLabel">English</span>)</h2>
+                <textarea id="translationOutput" rows="10" readonly></textarea>
+            </div>
+        </div>
+
+        <div class="api-key-warning">
+            ⚠️ Your API key is used directly in the browser. Do not share this page publicly if using your main key.
+            Consider using restricted keys if possible.
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
