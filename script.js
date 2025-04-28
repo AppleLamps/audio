@@ -1,21 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements ---
     const targetLangSelect = document.getElementById('targetLang');
+    const apiKeyInput = document.getElementById('apiKeyInput'); // Added
     const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
     const statusDiv = document.getElementById('status');
-    const apiStatusDiv = document.getElementById('apiStatus');
+    // const apiStatusDiv = document.getElementById('apiStatus'); // Removed
     const transcriptionOutput = document.getElementById('transcriptionOutput');
     const translationOutput = document.getElementById('translationOutput');
     const targetLangLabel = document.getElementById('targetLangLabel');
 
     // --- State Variables ---
     let isRunning = false;
-    let userApiKey = null;
+    // let userApiKey = null; // Removed - will read from input directly
     let selectedTargetLang = 'English'; // Default
 
-    // --- Fetch API Key on Load ---
-    fetchApiKey();
+    // --- Fetch API Key on Load --- (Removed)
+    // fetchApiKey();
 
     // Audio Processing
     let audioContext = null;
@@ -33,37 +34,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let fullTranscription = "";
     let fullTranslation = "";
 
-    // --- API Key Management ---
-    async function fetchApiKey() {
-        apiStatusDiv.textContent = "Checking API key...";
-        apiStatusDiv.className = "api-status api-status-loading";
-
-        try {
-            const response = await fetch('/api/getApiKey');
-
-            if (!response.ok) {
-                throw new Error(`Failed to fetch API key: ${response.status}`);
-            }
-
-            const data = await response.json();
-            userApiKey = data.apiKey;
-
-            if (!userApiKey) {
-                throw new Error("API key not found");
-            }
-
-            apiStatusDiv.textContent = "API key loaded successfully";
-            apiStatusDiv.className = "api-status api-status-success";
-            startButton.disabled = false;
-        } catch (error) {
-            console.error("Error fetching API key:", error);
-            apiStatusDiv.textContent = `Error: ${error.message}. Please check server configuration.`;
-            apiStatusDiv.className = "api-status api-status-error";
-            startButton.disabled = true;
-        }
-    }
+    // --- API Key Management --- (Removed fetchApiKey function)
 
     // --- Event Listeners ---
+    apiKeyInput.addEventListener('input', () => {
+        // Enable start button only if API key input has value
+        startButton.disabled = !apiKeyInput.value.trim();
+    });
     startButton.addEventListener('click', startProcess);
     stopButton.addEventListener('click', stopProcess);
     targetLangSelect.addEventListener('change', (e) => {
@@ -76,11 +53,18 @@ document.addEventListener('DOMContentLoaded', () => {
     async function startProcess() {
         selectedTargetLang = targetLangSelect.value; // Ensure latest value
         targetLangLabel.textContent = selectedTargetLang;
+        const userApiKey = apiKeyInput.value.trim(); // Read key from input
 
         if (!userApiKey) {
-            updateStatus("API key not available. Please wait for it to load or check for errors.", "error");
+            updateStatus("Please enter your OpenAI API key.", "error");
             return;
         }
+        // Basic format check (optional but helpful)
+        if (!userApiKey.startsWith('sk-')) {
+             updateStatus("Invalid API key format. It should start with 'sk-'.", "error");
+             return;
+        }
+
         if (isRunning) return;
 
         isRunning = true;
@@ -316,6 +300,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const userApiKey = apiKeyInput.value.trim(); // Read key again just in case
+
         // Construct URL and Subprotocols
         // Note: Model can be passed in URL or session update. Using URL here.
         const model = "gpt-4o-mini-transcribe"; // Or select dynamically
@@ -325,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Prepare subprotocols with proper format
         const subProtocols = [
             "realtime",
-            `openai-insecure-api-key.${userApiKey}`, // SECURITY RISK!
+            `openai-insecure-api-key.${userApiKey}`, // Use key from input
             "openai-beta.realtime-v1"
         ];
 
@@ -465,6 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function translateText(textToTranslate) {
+        const userApiKey = apiKeyInput.value.trim(); // Read key from input
         if (!textToTranslate || !userApiKey) return;
 
         console.log(`Translating segment: "${textToTranslate}" to ${selectedTargetLang}`);
@@ -554,9 +541,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Helper Functions ---
 
     function updateUIState(running) {
-        startButton.disabled = running;
+        // Start button is disabled if not running AND api key is missing
+        startButton.disabled = running || !apiKeyInput.value.trim();
         stopButton.disabled = !running;
         targetLangSelect.disabled = running;
+        apiKeyInput.disabled = running; // Disable API key input while running
     }
 
     function updateStatus(message, type = "info") {

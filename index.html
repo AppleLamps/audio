@@ -30,15 +30,18 @@
                     <!-- Add more languages supported by GPT translation -->
                 </select>
                 <p class="note">(Source language is detected automatically)</p>
-                <div id="apiStatus" class="api-status">Checking API key...</div>
+                <div class="api-key-input">
+                    <label for="apiKeyInput">OpenAI API Key:</label>
+                    <input type="password" id="apiKeyInput" placeholder="Enter your API key (sk-...)">
+                </div>
             </div>
             <div class="buttons">
-                <button id="startButton">Start Listening</button>
+                <button id="startButton" disabled>Start Listening</button>
                 <button id="stopButton" disabled>Stop Listening</button>
             </div>
         </div>
 
-        <div id="status" class="status-idle">Enter API Key and click Start.</div>
+        <div id="status" class="status-idle">Enter API Key, select target language, and click Start.</div>
 
         <div class="text-areas">
             <div class="transcription">
@@ -52,7 +55,7 @@
         </div>
 
         <div class="footer">
-            Powered by OpenAI's GPT models. API key is securely stored in environment variables.
+            Powered by OpenAI's GPT models. API key is handled client-side.
         </div>
 
     </div>
